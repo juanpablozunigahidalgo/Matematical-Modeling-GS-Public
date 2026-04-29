@@ -5,6 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GettaShower Investor Portal</title>
+    <script>
+      (function () {
+        // Recover SPA route redirected from GitHub Pages 404 fallback.
+        var params = new URLSearchParams(window.location.search);
+        var path = params.get("p");
+        if (!path) return;
+        var query = params.get("q");
+        var restored = path + (query ? ("?" + query) : "") + window.location.hash;
+        window.history.replaceState(null, "", restored);
+      })();
+    </script>
     <script type="module" crossorigin src="./assets/index-DQKqBJAn.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DttU-gIo.css">
   </head>
