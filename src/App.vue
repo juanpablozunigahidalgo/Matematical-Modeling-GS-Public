@@ -490,7 +490,6 @@ onUnmounted(() => {
                 allowfullscreen
               ></iframe>
             </div>
-            <a class="material-btn" href="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/view?usp=sharing" target="_blank" rel="noopener noreferrer">Watch team video</a>
           </div>
 
       </div>
