@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import csvRaw from "./data/cities.csv?raw";
 import hostFacilitiesRaw from "./data/host-facilities.csv?raw";
 
@@ -46,6 +46,7 @@ type HostFacilityRef = {
 };
 
 const view = ref<"simulator" | "reference" | "math">("simulator");
+const page = ref<"portal" | "roi-model">("portal");
 
 const defaultScenario: Scenario = {
   price: 8,
@@ -334,25 +335,159 @@ const cashChart = computed(() => {
 
   return { w, h, redPoints, greenPoints, zeroY, yTicks, xTicks, breakEvenX, breakEvenLabel };
 });
+
+function normalizePath(path: string): string {
+  return path.replace(/\/+$/, "") || "/";
+}
+
+function goToPage(target: "portal" | "roi-model") {
+  const nextPath = target === "portal" ? "/" : "/roi-model";
+  if (normalizePath(window.location.pathname) !== normalizePath(nextPath)) {
+    window.history.pushState({}, "", nextPath);
+  }
+  page.value = target;
+}
+
+function syncPageFromPath() {
+  page.value = normalizePath(window.location.pathname).endsWith("/roi-model") ? "roi-model" : "portal";
+}
+
+onMounted(() => {
+  syncPageFromPath();
+  window.addEventListener("popstate", syncPageFromPath);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("popstate", syncPageFromPath);
+});
 </script>
 
 <template>
   <main class="layout">
     <header class="header">
-      <h1>GettaShower Investor Model</h1>
+      <p class="hero-badge">GettaShower investor tool</p>
+      <div class="brand-row">
+        <img src="/GS-ICON-BLUE.svg" alt="GettaShower icon" class="brand-icon">
+        <h1>GettaShower Investor Portal</h1>
+      </div>
       <p>
         Interactive forecasting model for Summer 2026 launch and yearly growth. Built on host network expansion,
         session capacity per host, and operating economics.
       </p>
       <nav class="nav">
+        <button :class="{ active: page === 'portal' }" @click="goToPage('portal')">Investor portal</button>
+        <button :class="{ active: page === 'roi-model' }" @click="goToPage('roi-model')">ROI model</button>
+        <a class="home-link-btn" href="https://www.gettashower.com/" target="_blank" rel="noopener noreferrer">GettaShower</a>
+      </nav>
+      <nav v-if="page === 'roi-model'" class="subnav">
         <button :class="{ active: view === 'simulator' }" @click="view = 'simulator'">Simulator</button>
         <button :class="{ active: view === 'math' }" @click="view = 'math'">Mathematical model</button>
         <button :class="{ active: view === 'reference' }" @click="view = 'reference'">Reference data</button>
-        <a class="home-link-btn" href="https://www.gettashower.com/" target="_blank" rel="noopener noreferrer">GettaShower</a>
       </nav>
     </header>
 
-    <section v-if="view === 'simulator'" class="simulator">
+    <section v-if="page === 'portal'" class="reference portal-page">
+      <div class="portal-hero-clean">
+        <div class="portal-copy">
+          <p class="hero-badge">Investor access</p>
+          <h2>Built for the next urban mobility layer.</h2>
+          <p>
+            GettaShower connects high-frequency urban demand with underused shower infrastructure.
+            We monetize existing assets and scale city by city with measurable unit economics.
+          </p>
+          <div class="portal-cta">
+            <a class="home-link-btn pitch-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Latest pitch deck</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="portal-kpi-row">
+        <div class="kpi"><span>Initial investment</span><strong>{{ euro(scenario.initialInvestment) }}</strong></div>
+        <div class="kpi"><span>Projected platform revenue</span><strong>{{ euro(metrics.totalRevenue) }}</strong></div>
+        <div class="kpi"><span>Projected host revenue</span><strong>{{ euro(metrics.totalHostRevenue) }}</strong></div>
+        <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
+        <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
+      </div>
+
+      <h3>Investment thesis</h3>
+      <div class="portal-strip">
+        <div><strong>Why now:</strong> heat stress + dense tourism + mobile payment behavior.</div>
+        <div><strong>Business model:</strong> 70% host / 20% platform / 6% country manager / 4% CAC.</div>
+        <div><strong>Execution:</strong> full technical founding team building and shipping in-house.</div>
+      </div>
+
+      <h3>Founder team</h3>
+      <div class="portal-grid founders-grid">
+        <div class="kpi founder-card">
+          <div class="founder-head">
+            <span class="founder-photo-ring"><img src="/team/juan-pablo.png" alt="Juan Pablo profile photo" class="founder-photo"></span>
+          </div>
+          <h4 class="founder-name">Juan Pablo Zúñiga Hidalgo</h4>
+          <p class="founder-title">CEO</p>
+          <ul class="founder-facts">
+            <li><strong>University education:</strong> MSc Engineer + MSc Management (Chalmers University of Technology).</li>
+            <li><strong>Role:</strong> Leads product strategy, backend architecture, cloud systems, and GTM execution in Southern Europe.</li>
+            <li><strong>Key focus:</strong> city rollout operations, partnerships, and full-stack delivery speed.</li>
+          </ul>
+          <div class="founder-links">
+            <a class="inline-link-btn" href="https://www.linkedin.com/in/jpzuniga" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="inline-link-btn" href="https://www.zunigajp.com/" target="_blank" rel="noopener noreferrer">Personal site</a>
+            <a class="inline-link-btn cv-btn" href="/docs/CV-Juan-Pablo-Zuniga-Hidalgo.pdf" download>Download CV</a>
+          </div>
+        </div>
+        <div class="kpi founder-card">
+          <div class="founder-head">
+            <span class="founder-photo-ring"><img src="/team/isabell.png" alt="Isabell profile photo" class="founder-photo"></span>
+          </div>
+          <h4 class="founder-name">Isabell Nordmark</h4>
+          <p class="founder-title">CTO</p>
+          <ul class="founder-facts">
+            <li><strong>University education:</strong> MSc Architecture & Urban Design + MSc Engineer in Computer Science (Chalmers University of Technology).</li>
+            <li><strong>Role:</strong> Leads mobile product engineering (Flutter/Dart), technical architecture, and design-quality UX delivery.</li>
+            <li><strong>Key focus:</strong> rapid product iteration, user trust flows, and platform usability.</li>
+          </ul>
+          <div class="founder-links">
+            <a class="inline-link-btn" href="https://www.linkedin.com/in/i-nordmark/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="inline-link-btn cv-btn" href="/docs/Isabell-Nordmark-CV.pdf" download>Download CV</a>
+          </div>
+        </div>
+      </div>
+
+      <h3>Investor materials</h3>
+      <div class="materials-wrap">
+        <div class="kpi video-embed-card featured-material">
+          <div class="material-header">
+            <span class="material-title-main">Concept video</span>
+          </div>
+          <p>2-minute problem-solution narrative for fast investor context.</p>
+          <div class="video-wrap">
+            <iframe
+              src="https://www.youtube.com/embed/MZTcV0F3MI0"
+              title="GettaShower concept video"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+
+        <div class="materials-grid">
+          <div class="kpi material-card">
+            <span class="material-title">Team video</span>
+            <p>Founder story, execution readiness, and team chemistry.</p>
+            <a class="material-btn" href="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/view?usp=sharing" target="_blank" rel="noopener noreferrer">Watch team video</a>
+          </div>
+          <div class="kpi material-card">
+            <span class="material-title">Pitch deck</span>
+            <p>Latest investor presentation with strategy, market, and ask.</p>
+            <a class="material-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Open pitch deck</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="page === 'roi-model' && view === 'simulator'" class="simulator">
       <aside class="panel">
         <h2>Editable assumptions</h2>
         <div v-if="runError" class="error">{{ runError }}</div>
@@ -528,7 +663,7 @@ const cashChart = computed(() => {
       </article>
     </section>
 
-    <section v-else-if="view === 'math'" class="reference">
+    <section v-else-if="page === 'roi-model' && view === 'math'" class="reference">
       <h2>Mathematical model</h2>
       <p>
         This section explains the model step by step, from host rollout to break-even. It is intentionally explicit so that
@@ -636,7 +771,7 @@ const cashChart = computed(() => {
       </p>
     </section>
 
-    <section v-else class="reference">
+    <section v-else-if="page === 'roi-model'" class="reference">
       <h2>Reference data used</h2>
       <p>
         This page shows the CSV input used by the model. The
