@@ -221,7 +221,7 @@ body {
 
 .portal-kpi-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.65rem;
   margin-bottom: 1rem;
 }
@@ -881,7 +881,7 @@ td:first-child {
   }
 
   .portal-kpi-row {
-    grid-template-columns: repeat(2, minmax(130px, 1fr));
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
 
   .portal-actions {

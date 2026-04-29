@@ -25,6 +25,7 @@ type Scenario = {
   avgSalary: number;
   fixedOps: number;
   initialInvestment: number;
+  initialMonth: string;
   months: number;
 };
 
@@ -59,11 +60,12 @@ const defaultScenario: Scenario = {
   rampPctMonth8: 40,
   rampPctMonth16: 80,
   rampPctMonth24: 100,
-  showersPerHostDay: 4,
+  showersPerHostDay: 3,
   employees: 2,
   avgSalary: 6000,
   fixedOps: 1500,
   initialInvestment: 350000,
+  initialMonth: "2026-06",
   months: 24,
 };
 const AVG_MONTH_LENGTH_DAYS = 30.4;
@@ -149,7 +151,12 @@ const hostCapError = computed(() => {
   return v < 0 || v > 100 ? "Host cap used (%) must be between 0 and 100." : "";
 });
 
-const runError = computed(() => shareError.value || rampError.value || hostCapError.value);
+const initialMonthError = computed(() => {
+  const v = scenarioDraft.value.initialMonth;
+  return /^\d{4}-\d{2}$/.test(v) ? "" : "Initial date must be a valid month (YYYY-MM).";
+});
+
+const runError = computed(() => shareError.value || rampError.value || hostCapError.value || initialMonthError.value);
 const hasPendingChanges = computed(() => JSON.stringify(scenarioDraft.value) !== JSON.stringify(scenario.value));
 
 function runModel() {
@@ -164,7 +171,12 @@ function runModel() {
 }
 
 function monthLabel(index: number): string {
-  const d = new Date(2026, 5 + index, 1);
+  const [yearRaw, monthRaw] = scenario.value.initialMonth.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw) - 1;
+  const safeYear = Number.isFinite(year) ? year : 2026;
+  const safeMonth = Number.isFinite(month) ? month : 5;
+  const d = new Date(safeYear, safeMonth + index, 1);
   return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
 }
 
@@ -258,10 +270,25 @@ const metrics = computed(() => {
 
 const euro = (value: number): string =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+const euroPrice = (value: number): string =>
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 
 const int = (value: number): string => new Intl.NumberFormat("en-GB").format(value);
 const compactEuro = (value: number): string =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", notation: "compact", maximumFractionDigits: 1 }).format(value);
+const simulationStartDate = computed(() => {
+  const [yearRaw, monthRaw] = scenario.value.initialMonth.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw) - 1;
+  const safeYear = Number.isFinite(year) ? year : 2026;
+  const safeMonth = Number.isFinite(month) ? month : 5;
+  return new Date(safeYear, safeMonth, 1).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+});
 
 const cashChart = computed(() => {
   const w = 1000;
@@ -402,11 +429,15 @@ onUnmounted(() => {
       </div>
 
       <div class="portal-kpi-row">
-        <div class="kpi"><span>Initial investment</span><strong>{{ euro(scenario.initialInvestment) }}</strong></div>
-        <div class="kpi"><span>Projected platform revenue</span><strong>{{ euro(metrics.totalRevenue) }}</strong></div>
-        <div class="kpi"><span>Projected host revenue</span><strong>{{ euro(metrics.totalHostRevenue) }}</strong></div>
+        <div class="kpi"><span>Initial investment</span><strong class="neg">{{ euro(scenario.initialInvestment) }}</strong></div>
+        <div class="kpi"><span>Projected platform revenue</span><strong class="pos">{{ euro(metrics.totalRevenue) }}</strong></div>
+        <div class="kpi"><span>Projected host revenue</span><strong class="pos">{{ euro(metrics.totalHostRevenue) }}</strong></div>
         <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
         <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
+        <div class="kpi"><span>Average shower price</span><strong>{{ euroPrice(scenario.price) }}</strong></div>
+        <div class="kpi"><span>Average showers/day per host</span><strong>{{ int(scenario.showersPerHostDay) }}</strong></div>
+        <div class="kpi"><span>Simulated months</span><strong>{{ int(scenario.months) }}</strong></div>
+        <div class="kpi"><span>Initial date of simulation</span><strong>{{ simulationStartDate }}</strong></div>
       </div>
       <div class="portal-actions">
         <button class="home-link-btn simulate-btn" type="button" @click="goToPage('roi-model')">
@@ -561,6 +592,10 @@ onUnmounted(() => {
           <label>
             <span class="label-top">Initial investment (EUR) <span class="info-dot" data-tooltip="Upfront capital available at start. Cumulative cash starts at negative this value to measure payback/break-even.">i</span></span>
             <input v-model.number="scenarioDraft.initialInvestment" type="number" step="1000">
+          </label>
+          <label>
+            <span class="label-top">Initial date (month/year) <span class="info-dot" data-tooltip="Simulation starting month used for monthly timeline labels and investor portal KPI card.">i</span></span>
+            <input v-model="scenarioDraft.initialMonth" type="month">
           </label>
           <label>
             <span class="label-top">Months simulated <span class="info-dot" data-tooltip="Time horizon for projection. Longer horizons help evaluate break-even and long-term scale.">i</span></span>
