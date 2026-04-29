@@ -408,10 +408,15 @@ onUnmounted(() => {
         <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
         <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
       </div>
+      <div class="portal-actions">
+        <button class="home-link-btn simulate-btn" type="button" @click="goToPage('roi-model')">
+          Simulate business model
+        </button>
+      </div>
 
       <h3>Investment thesis</h3>
       <div class="portal-strip">
-        <div><strong>Why now:</strong> heat stress + dense tourism + mobile payment behavior.</div>
+        <div><strong>Why now:</strong> high density cities + more active people globally + mobile usage + urban mobility + mobile technology widespread.</div>
         <div><strong>Business model:</strong> 70% host / 20% platform / 6% country manager / 4% CAC.</div>
         <div><strong>Execution:</strong> full technical founding team building and shipping in-house.</div>
       </div>
@@ -459,7 +464,7 @@ onUnmounted(() => {
           <div class="material-header">
             <span class="material-title-main">Concept video</span>
           </div>
-          <p>2-minute problem-solution narrative for fast investor context.</p>
+          <p>4-minute problem-solution narrative for fast investor context.</p>
           <div class="video-wrap">
             <iframe
               src="https://www.youtube.com/embed/MZTcV0F3MI0"
@@ -472,18 +477,22 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="materials-grid">
-          <div class="kpi material-card">
+        <div class="kpi material-card featured-material">
             <span class="material-title">Team video</span>
             <p>Founder story, execution readiness, and team chemistry.</p>
+            <div class="video-wrap">
+              <iframe
+                src="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/preview"
+                title="GettaShower team video"
+                loading="lazy"
+                allow="autoplay; encrypted-media"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
             <a class="material-btn" href="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/view?usp=sharing" target="_blank" rel="noopener noreferrer">Watch team video</a>
           </div>
-          <div class="kpi material-card">
-            <span class="material-title">Pitch deck</span>
-            <p>Latest investor presentation with strategy, market, and ask.</p>
-            <a class="material-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Open pitch deck</a>
-          </div>
-        </div>
+
       </div>
     </section>
 

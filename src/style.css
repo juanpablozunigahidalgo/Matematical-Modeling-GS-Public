@@ -158,9 +158,9 @@ body {
   background: #1f4f95;
   color: #ffffff;
   border-color: #1f4f95;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  padding: 0.68rem 1.05rem;
+  padding: 1.2rem 2.1rem;
   box-shadow: 0 8px 18px rgba(31, 79, 149, 0.25);
 }
 
@@ -226,6 +226,26 @@ body {
   margin-bottom: 1rem;
 }
 
+.portal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.45rem 0 1rem;
+}
+
+.simulate-btn {
+  background: #1f4f95;
+  color: #ffffff;
+  border-color: #1f4f95;
+  font-size: 1.12rem;
+  font-weight: 800;
+  padding: 0.72rem 1.05rem;
+}
+
+.simulate-btn:hover {
+  background: #1a4381;
+  border-color: #1a4381;
+}
+
 .video-embed-card {
   margin-bottom: 0.75rem;
 }
@@ -256,7 +276,7 @@ body {
 
 .materials-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.75rem;
 }
 
@@ -272,6 +292,21 @@ body {
   color: #0f4696;
   margin-bottom: 0.2rem;
   letter-spacing: 0.01em;
+}
+
+/* Keep material headings large inside KPI cards. */
+.kpi .material-title-main {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #063a93;
+}
+
+.kpi .material-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #0a419e;
 }
 
 .material-btn {
@@ -325,8 +360,14 @@ body {
   border: 1px solid #d5e2f6;
   border-radius: 12px;
   padding: 0.6rem 0.7rem;
-  font-size: 0.82rem;
+  font-size: 1rem;
+  line-height: 1.45;
   color: #3f5f95;
+}
+
+.portal-strip strong {
+  font-size: 1.08rem;
+  color: #1d3f79;
 }
 
 .portal-cta {
@@ -841,6 +882,11 @@ td:first-child {
 
   .portal-kpi-row {
     grid-template-columns: repeat(2, minmax(130px, 1fr));
+  }
+
+  .portal-actions {
+    justify-content: flex-start;
+    margin-top: -0.2rem;
   }
 
   .portal-kpi-grid {
