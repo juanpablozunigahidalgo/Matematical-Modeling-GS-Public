@@ -478,7 +478,7 @@ onUnmounted(() => {
           <h4 class="founder-name">Isabell Nordmark</h4>
           <p class="founder-title">CTO</p>
           <ul class="founder-facts">
-            <li><strong>University education:</strong> MSc Architecture & Urban Design + MSc Engineer in Computer Science (Chalmers University of Technology).</li>
+            <li><strong>University education:</strong> MSc Architecture & Urban Design + BSc Engineer in Computer Science (Chalmers University of Technology).</li>
             <li><strong>Role:</strong> Leads mobile product engineering (Flutter/Dart), technical architecture, and design-quality UX delivery.</li>
             <li><strong>Key focus:</strong> rapid product iteration, user trust flows, and platform usability.</li>
           </ul>
