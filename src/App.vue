@@ -628,7 +628,7 @@ onUnmounted(() => {
         </div>
 
         <div class="kpis">
-          <div class="kpi"><span>Total GMV</span><strong>{{ euro(metrics.totalGmv) }}</strong></div>
+          <div class="kpi"><span>Total transaction value</span><strong>{{ euro(metrics.totalGmv) }}</strong></div>
           <div class="kpi"><span>Platform revenue</span><strong>{{ euro(metrics.totalRevenue) }}</strong></div>
           <div class="kpi"><span>Total Host revenue (70%)</span><strong>{{ euro(metrics.totalHostRevenue) }}</strong></div>
           <div class="kpi"><span>Total Country Manager revenue (4%)</span><strong>{{ euro(metrics.totalCountryManagerRevenue) }}</strong></div>
