@@ -50,7 +50,7 @@ const view = ref<"simulator" | "reference" | "math">("simulator");
 const page = ref<"portal" | "roi-model">("portal");
 
 const defaultScenario: Scenario = {
-  price: 8,
+  price: 10,
   platformTakePct: 20,
   hostTakePct: 70,
   cmPct: 6,
