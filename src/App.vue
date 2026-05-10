@@ -415,16 +415,24 @@ onUnmounted(() => {
                 grows worldwide, GettaShower connects city dwellers with shower facilities. We are making cities better
                 while creating a market with global business impact.
               </p>
-              <button type="button" class="invest-hero-cta" @click="goToPage('roi-model')">
-                Simulate our returns
-              </button>
+              <div class="invest-hero-actions">
+                <button type="button" class="invest-hero-cta" @click="goToPage('roi-model')">
+                  Simulate your returns
+                </button>
+                <a
+                  class="home-link-btn pitch-btn"
+                  href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >Latest pitch deck</a>
+              </div>
             </div>
             <div class="invest-hero-visual">
               <img
-                src="/invest-hero-team-map.png"
-                alt="Professionals presenting GettaShower host shower locations across Barcelona on a large display."
-                width="1200"
-                height="800"
+                src="/invest-hero-team-map.jpg"
+                alt="Professional portrait on a white background: business attire, smiling, finger to temple in a thoughtful pose."
+                width="863"
+                height="1024"
                 loading="eager"
                 decoding="async"
                 class="invest-hero-img"
@@ -453,38 +461,7 @@ onUnmounted(() => {
       </header>
 
     <section v-if="page === 'portal'" class="portal-page">
-      <div class="portal-hero-band portal-hero-band--soft portal-hero-band--business-concept">
-        <div class="portal-hero-inner">
-          <div id="portal-overview" class="portal-overview-block">
-            <div class="portal-overview-stack">
-              <header class="portal-overview-intro">
-                <h2 class="portal-overview-title">Business concept</h2>
-                <p class="portal-overview-lead">
-                  GettaShower connects high-frequency urban demand with underused shower infrastructure.
-                  We monetize existing assets and scale city by city with measurable unit economics.
-                </p>
-              </header>
-              <div class="portal-overview-video-wrap">
-                <div class="video-wrap portal-overview-video portal-video-embed">
-                  <iframe
-                    src="https://www.youtube.com/embed/MZTcV0F3MI0"
-                    title="GettaShower business concept video"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-              </div>
-              <div class="portal-cta portal-overview-cta">
-                <a class="home-link-btn pitch-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Latest pitch deck</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="portal-hero-band">
+      <div class="portal-hero-band portal-hero-band--soft">
         <div class="portal-hero-inner">
           <section id="model-snapshot" class="portal-subsection portal-model-snapshot" aria-labelledby="snapshot-heading">
             <header class="portal-subsection-head">
@@ -512,6 +489,34 @@ onUnmounted(() => {
               </div>
             </div>
           </section>
+        </div>
+      </div>
+
+      <div class="portal-hero-band portal-hero-band--business-concept">
+        <div class="portal-hero-inner">
+          <div id="portal-overview" class="portal-overview-block">
+            <div class="portal-overview-stack">
+              <header class="portal-overview-intro">
+                <h2 class="portal-overview-title">Business concept</h2>
+                <p class="portal-overview-lead">
+                  GettaShower connects high-frequency urban demand with underused shower infrastructure.
+                  We monetize existing assets and scale city by city with measurable unit economics.
+                </p>
+              </header>
+              <div class="portal-overview-video-wrap">
+                <div class="video-wrap portal-overview-video portal-video-embed">
+                  <iframe
+                    src="https://www.youtube.com/embed/MZTcV0F3MI0"
+                    title="GettaShower business concept video"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
