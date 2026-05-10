@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import InvestorWhySection from "./components/InvestorWhySection.vue";
+import InvestorFooter from "./components/InvestorFooter.vue";
+import RevenueSplitDrop from "./components/RevenueSplitDrop.vue";
 import csvRaw from "./data/cities.csv?raw";
 import hostFacilitiesRaw from "./data/host-facilities.csv?raw";
 
@@ -252,8 +255,8 @@ const rows = computed<Row[]>(() => {
 const metrics = computed(() => {
   const totalGmv = rows.value.reduce((acc, r) => acc + r.gmv, 0);
   const totalRevenue = rows.value.reduce((acc, r) => acc + r.appRevenue, 0);
-  const totalHostRevenue = totalGmv * 0.7;
-  const totalCountryManagerRevenue = totalGmv * 0.04;
+  const totalHostRevenue = totalGmv * (scenario.value.hostTakePct / 100);
+  const totalCountryManagerRevenue = totalGmv * (scenario.value.cmPct / 100);
   const finalCash = rows.value[rows.value.length - 1]?.cumulativeCash ?? 0;
   const breakEvenRow = rows.value.find((r) => r.cumulativeCash >= 0);
   const positiveFlowRow = rows.value.find((r) => r.net > 0);
@@ -373,6 +376,7 @@ function goToPage(target: "portal" | "roi-model") {
     window.history.pushState({}, "", nextPath);
   }
   page.value = target;
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function syncPageFromPath() {
@@ -390,128 +394,185 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="layout">
-    <header class="header">
-      <p class="hero-badge">GettaShower investor tool</p>
-      <div class="brand-row">
-        <img src="/GS-ICON-BLUE.svg" alt="GettaShower icon" class="brand-icon">
-        <h1>GettaShower Investor Portal</h1>
+  <div class="gs-app">
+    <header class="gs-site-header">
+      <div class="gs-site-header-inner">
+        <a class="gs-brand" href="https://www.gettashower.com/" target="_blank" rel="noopener noreferrer">
+          <img src="/GS-ICON-BLUE.svg" alt="" width="40" height="40" class="gs-brand-mark">
+          <span class="gs-brand-text">GettaShower</span>
+        </a>
       </div>
-      <p>
-        Interactive forecasting model for Summer 2026 launch and yearly growth. Built on host network expansion,
-        session capacity per host, and operating economics.
-      </p>
-      <nav class="nav">
-        <button :class="{ active: page === 'portal' }" @click="goToPage('portal')">Investor portal</button>
-        <button :class="{ active: page === 'roi-model' }" @click="goToPage('roi-model')">ROI model</button>
-        <a class="home-link-btn" href="https://www.gettashower.com/" target="_blank" rel="noopener noreferrer">GettaShower</a>
-      </nav>
-      <nav v-if="page === 'roi-model'" class="subnav">
-        <button :class="{ active: view === 'simulator' }" @click="view = 'simulator'">Simulator</button>
-        <button :class="{ active: view === 'math' }" @click="view = 'math'">Mathematical model</button>
-        <button :class="{ active: view === 'reference' }" @click="view = 'reference'">Reference data</button>
-      </nav>
     </header>
 
-    <section v-if="page === 'portal'" class="reference portal-page">
-      <div class="portal-hero-clean">
-        <div class="portal-copy">
-          <p class="hero-badge">Investor access</p>
-          <h2>Built for the next urban mobility layer.</h2>
-          <p>
-            GettaShower connects high-frequency urban demand with underused shower infrastructure.
-            We monetize existing assets and scale city by city with measurable unit economics.
+    <main class="layout gs-main" :class="{ 'gs-main--portal': page === 'portal', 'gs-main--roi': page === 'roi-model' }">
+      <div v-if="page === 'portal'" class="invest-hero-band">
+        <div class="invest-hero-inner">
+          <div class="invest-hero-split">
+            <div class="invest-hero-copy">
+              <h1 class="invest-hero-title">Invest on us.</h1>
+              <p class="invest-hero-body">
+                2 billion people live in high-density cities, and that number is set to increase. As sustainable transport
+                grows worldwide, GettaShower connects city dwellers with shower facilities. We are making cities better
+                while creating a market with global business impact.
+              </p>
+              <button type="button" class="invest-hero-cta" @click="goToPage('roi-model')">
+                Simulate our returns
+              </button>
+            </div>
+            <div class="invest-hero-visual">
+              <img
+                src="/invest-hero-team-map.png"
+                alt="Professionals presenting GettaShower host shower locations across Barcelona on a large display."
+                width="1200"
+                height="800"
+                loading="eager"
+                decoding="async"
+                class="invest-hero-img"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <header v-if="page === 'roi-model'" class="roi-model-page-header">
+        <div class="roi-model-page-header-inner">
+          <button type="button" class="roi-back-to-portal" @click="goToPage('portal')">
+            ← Investor overview
+          </button>
+          <p class="roi-model-eyebrow">Financial model</p>
+          <h1 class="roi-model-page-title">ROI model</h1>
+          <p class="roi-model-page-lead">
+            Stress-test assumptions, audit the equations, and inspect the reference inputs behind the projections.
           </p>
-          <div class="portal-cta">
-            <a class="home-link-btn pitch-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Latest pitch deck</a>
+          <nav class="roi-model-tabs" aria-label="ROI model views">
+            <button type="button" :class="{ active: view === 'simulator' }" @click="view = 'simulator'">Simulator</button>
+            <button type="button" :class="{ active: view === 'math' }" @click="view = 'math'">Mathematical model</button>
+            <button type="button" :class="{ active: view === 'reference' }" @click="view = 'reference'">Reference data</button>
+          </nav>
+        </div>
+      </header>
+
+    <section v-if="page === 'portal'" class="portal-page">
+      <div class="portal-hero-band portal-hero-band--soft portal-hero-band--business-concept">
+        <div class="portal-hero-inner">
+          <div id="portal-overview" class="portal-overview-block">
+            <div class="portal-overview-stack">
+              <header class="portal-overview-intro">
+                <h2 class="portal-overview-title">Business concept</h2>
+                <p class="portal-overview-lead">
+                  GettaShower connects high-frequency urban demand with underused shower infrastructure.
+                  We monetize existing assets and scale city by city with measurable unit economics.
+                </p>
+              </header>
+              <div class="portal-overview-video-wrap">
+                <div class="video-wrap portal-overview-video portal-video-embed">
+                  <iframe
+                    src="https://www.youtube.com/embed/MZTcV0F3MI0"
+                    title="GettaShower business concept video"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+              <div class="portal-cta portal-overview-cta">
+                <a class="home-link-btn pitch-btn" href="https://docs.google.com/presentation/d/1itNnG6QkeZWcX8PBBkrjUuJGBWrQDwzXSwM7T9CfkXM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Latest pitch deck</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="portal-kpi-row">
-        <div class="kpi"><span>Initial investment</span><strong class="neg">{{ euro(scenario.initialInvestment) }}</strong></div>
-        <div class="kpi"><span>Projected platform revenue</span><strong class="pos">{{ euro(metrics.totalRevenue) }}</strong></div>
-        <div class="kpi"><span>Projected host revenue</span><strong class="pos">{{ euro(metrics.totalHostRevenue) }}</strong></div>
-        <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
-        <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
-        <div class="kpi"><span>Average shower price</span><strong>{{ euroPrice(scenario.price) }}</strong></div>
-        <div class="kpi"><span>Average showers/day per host</span><strong>{{ int(scenario.showersPerHostDay) }}</strong></div>
-        <div class="kpi"><span>Simulated months</span><strong>{{ int(scenario.months) }}</strong></div>
-        <div class="kpi"><span>Initial date of simulation</span><strong>{{ simulationStartDate }}</strong></div>
-      </div>
-      <div class="portal-actions">
-        <button class="home-link-btn simulate-btn" type="button" @click="goToPage('roi-model')">
-          Simulate business model
-        </button>
-      </div>
-
-      <h3>Investment thesis</h3>
-      <div class="portal-strip">
-        <div><strong>Why now:</strong> high density cities + more active people globally + mobile usage + urban mobility + mobile technology widespread.</div>
-        <div><strong>Business model:</strong> 70% host / 20% platform / 6% country manager / 4% CAC.</div>
-        <div><strong>Execution:</strong> full technical founding team building and shipping in-house.</div>
-      </div>
-
-      <h3>Founder team</h3>
-      <div class="portal-grid founders-grid">
-        <div class="kpi founder-card">
-          <div class="founder-head">
-            <span class="founder-photo-ring"><img src="/team/juan-pablo.png" alt="Juan Pablo profile photo" class="founder-photo"></span>
-          </div>
-          <h4 class="founder-name">Juan Pablo Zúñiga Hidalgo</h4>
-          <p class="founder-title">CEO</p>
-          <ul class="founder-facts">
-            <li><strong>University education:</strong> MSc Engineer + MSc Management (Chalmers University of Technology).</li>
-            <li><strong>Role:</strong> Leads product strategy, backend architecture, cloud systems, and GTM execution in Southern Europe.</li>
-            <li><strong>Key focus:</strong> city rollout operations, partnerships, and full-stack delivery speed.</li>
-          </ul>
-          <div class="founder-links">
-            <a class="inline-link-btn" href="https://www.linkedin.com/in/jpzuniga" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a class="inline-link-btn" href="https://www.zunigajp.com/" target="_blank" rel="noopener noreferrer">Personal site</a>
-            <a class="inline-link-btn cv-btn" href="/docs/CV-Juan-Pablo-Zuniga-Hidalgo.pdf" download>Download CV</a>
-          </div>
+      <div class="portal-hero-band">
+        <div class="portal-hero-inner">
+          <section id="model-snapshot" class="portal-subsection portal-model-snapshot" aria-labelledby="snapshot-heading">
+            <header class="portal-subsection-head">
+              <h2 id="snapshot-heading" class="portal-subsection-title">Business Projections</h2>
+              <p class="portal-subsection-lead">
+                Headline outputs from the current assumptions. Use the simulator to stress-test pricing, ramp, and operating costs.
+              </p>
+            </header>
+            <div class="portal-subsection-body">
+              <div class="portal-kpi-row portal-kpi-row--snapshot">
+                <div class="kpi"><span>Initial investment</span><strong class="neg">{{ euro(scenario.initialInvestment) }}</strong></div>
+                <div class="kpi"><span>Projected platform revenue</span><strong class="pos">{{ euro(metrics.totalRevenue) }}</strong></div>
+                <div class="kpi"><span>Projected host revenue</span><strong class="pos">{{ euro(metrics.totalHostRevenue) }}</strong></div>
+                <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
+                <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
+                <div class="kpi"><span>Average shower price</span><strong>{{ euroPrice(scenario.price) }}</strong></div>
+                <div class="kpi"><span>Average showers/day per host</span><strong>{{ int(scenario.showersPerHostDay) }}</strong></div>
+                <div class="kpi"><span>Simulated months</span><strong>{{ int(scenario.months) }}</strong></div>
+                <div class="kpi"><span>Initial date of simulation</span><strong>{{ simulationStartDate }}</strong></div>
+              </div>
+              <div class="portal-subsection-actions">
+                <button class="home-link-btn simulate-btn" type="button" @click="goToPage('roi-model')">
+                  Simulate business model
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
-        <div class="kpi founder-card">
-          <div class="founder-head">
-            <span class="founder-photo-ring"><img src="/team/isabell.png" alt="Isabell profile photo" class="founder-photo"></span>
-          </div>
-          <h4 class="founder-name">Isabell Nordmark</h4>
-          <p class="founder-title">CTO</p>
-          <ul class="founder-facts">
-            <li><strong>University education:</strong> MSc Architecture & Urban Design + BSc Engineer in Computer Science (Chalmers University of Technology).</li>
-            <li><strong>Role:</strong> Leads mobile product engineering (Flutter/Dart), technical architecture, and design-quality UX delivery.</li>
-            <li><strong>Key focus:</strong> rapid product iteration, user trust flows, and platform usability.</li>
-          </ul>
-          <div class="founder-links">
-            <a class="inline-link-btn" href="https://www.linkedin.com/in/i-nordmark/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a class="inline-link-btn cv-btn" href="/docs/Isabell-Nordmark-CV.pdf" download>Download CV</a>
+      </div>
+
+      <InvestorWhySection />
+
+      <div class="portal-hero-band portal-hero-band--soft">
+        <div class="portal-hero-inner">
+          <h3 id="investment-thesis" class="portal-section-heading">Investment thesis</h3>
+          <div class="portal-strip portal-strip--hero">
+            <div><strong>Why now:</strong> high density cities + more active people globally + mobile usage + urban mobility + mobile technology widespread.</div>
+            <div><strong>Business model:</strong> 70% host / 20% platform / 6% country manager / 4% CAC.</div>
+            <div><strong>Execution:</strong> full technical founding team building and shipping in-house.</div>
           </div>
         </div>
       </div>
 
-      <h3>Investor materials</h3>
-      <div class="materials-wrap">
-        <div class="kpi video-embed-card featured-material">
-          <div class="material-header">
-            <span class="material-title-main">Concept video</span>
-          </div>
-          <p>4-minute problem-solution narrative for fast investor context.</p>
-          <div class="video-wrap">
-            <iframe
-              src="https://www.youtube.com/embed/MZTcV0F3MI0"
-              title="GettaShower concept video"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-            ></iframe>
+      <div class="portal-hero-band">
+        <div class="portal-hero-inner">
+          <h3 id="founder-team" class="portal-section-heading">Founder team</h3>
+          <div class="portal-grid founders-grid">
+            <div class="kpi founder-card">
+              <div class="founder-head">
+                <span class="founder-photo-ring"><img src="/team/juan-pablo.png" alt="Juan Pablo profile photo" class="founder-photo"></span>
+              </div>
+              <h4 class="founder-name">Juan Pablo Zúñiga Hidalgo</h4>
+              <p class="founder-title">CEO</p>
+              <ul class="founder-facts">
+                <li><strong>University education:</strong> MSc Engineer + MSc Management (Chalmers University of Technology).</li>
+                <li><strong>Role:</strong> Leads product strategy, backend architecture, cloud systems, and GTM execution in Southern Europe.</li>
+                <li><strong>Key focus:</strong> city rollout operations, partnerships, and full-stack delivery speed.</li>
+              </ul>
+              <div class="founder-links">
+                <a class="inline-link-btn" href="https://www.linkedin.com/in/jpzuniga" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a class="inline-link-btn" href="https://www.zunigajp.com/" target="_blank" rel="noopener noreferrer">Personal site</a>
+                <a class="inline-link-btn cv-btn" href="/docs/CV-Juan-Pablo-Zuniga-Hidalgo.pdf" download>Download CV</a>
+              </div>
+            </div>
+            <div class="kpi founder-card">
+              <div class="founder-head">
+                <span class="founder-photo-ring"><img src="/team/isabell.png" alt="Isabell profile photo" class="founder-photo"></span>
+              </div>
+              <h4 class="founder-name">Isabell Nordmark</h4>
+              <p class="founder-title">CTO</p>
+              <ul class="founder-facts">
+                <li><strong>University education:</strong> MSc Architecture & Urban Design + BSc Engineer in Computer Science (Chalmers University of Technology).</li>
+                <li><strong>Role:</strong> Leads mobile product engineering (Flutter/Dart), technical architecture, and design-quality UX delivery.</li>
+                <li><strong>Key focus:</strong> rapid product iteration, user trust flows, and platform usability.</li>
+              </ul>
+              <div class="founder-links">
+                <a class="inline-link-btn" href="https://www.linkedin.com/in/i-nordmark/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a class="inline-link-btn cv-btn" href="/docs/Isabell-Nordmark-CV.pdf" download>Download CV</a>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="kpi material-card featured-material">
-            <span class="material-title">Team video</span>
-            <p>Founder story, execution readiness, and team chemistry.</p>
-            <div class="video-wrap">
+      <div id="investor-materials" class="portal-hero-band portal-hero-band--soft">
+        <div class="portal-hero-inner">
+          <div class="portal-overview-video-wrap">
+            <div class="video-wrap portal-video-embed">
               <iframe
                 src="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/preview"
                 title="GettaShower team video"
@@ -522,7 +583,7 @@ onUnmounted(() => {
               ></iframe>
             </div>
           </div>
-
+        </div>
       </div>
     </section>
 
@@ -613,6 +674,13 @@ onUnmounted(() => {
       </aside>
 
       <article class="results">
+        <RevenueSplitDrop
+          :platform-take-pct="scenarioDraft.platformTakePct"
+          :host-take-pct="scenarioDraft.hostTakePct"
+          :cm-pct="scenarioDraft.cmPct"
+          :ads-pct="scenarioDraft.adsPct"
+          :price-label="euroPrice(scenarioDraft.price)"
+        />
         <h2>Business model summary</h2>
         <p>
           The model uses a simple operational logic. Each month:
@@ -630,8 +698,12 @@ onUnmounted(() => {
         <div class="kpis">
           <div class="kpi"><span>Total transaction value</span><strong>{{ euro(metrics.totalGmv) }}</strong></div>
           <div class="kpi"><span>Platform revenue</span><strong>{{ euro(metrics.totalRevenue) }}</strong></div>
-          <div class="kpi"><span>Total Host revenue (70%)</span><strong>{{ euro(metrics.totalHostRevenue) }}</strong></div>
-          <div class="kpi"><span>Total Country Manager revenue (4%)</span><strong>{{ euro(metrics.totalCountryManagerRevenue) }}</strong></div>
+          <div class="kpi">
+            <span>Total Host revenue ({{ scenario.hostTakePct }}%)</span><strong>{{ euro(metrics.totalHostRevenue) }}</strong>
+          </div>
+          <div class="kpi">
+            <span>Total Country Manager revenue ({{ scenario.cmPct }}%)</span><strong>{{ euro(metrics.totalCountryManagerRevenue) }}</strong>
+          </div>
           <div class="kpi"><span>Final cash position</span><strong :class="{ neg: metrics.finalCash < 0, pos: metrics.finalCash >= 0 }">{{ euro(metrics.finalCash) }}</strong></div>
           <div class="kpi"><span>Positive monthly cash flow</span><strong :class="{ pos: metrics.positiveFlow !== 'Not reached' }">{{ metrics.positiveFlow }}</strong></div>
           <div class="kpi"><span>Break-even</span><strong :class="{ pos: metrics.breakEven !== 'Not reached' }">{{ metrics.breakEven }}</strong></div>
@@ -728,24 +800,26 @@ onUnmounted(() => {
       <p><strong>Step E:</strong> Add each month to cumulative cash and identify when it first becomes positive (break-even).</p>
 
       <h3>Step 1: Input variables</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Symbol</th>
-            <th>Meaning</th>
-            <th>From UI / data</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>H_c,m</td><td>Hosts in city c in month m</td><td>City rollout plan</td></tr>
-          <tr><td>q</td><td>Showers per host per day</td><td>UI parameter</td></tr>
-          <tr><td>D_avg</td><td>Average month length ({{ AVG_MONTH_LENGTH_DAYS }} days)</td><td>Model constant</td></tr>
-          <tr><td>p</td><td>Price per shower</td><td>UI parameter</td></tr>
-          <tr><td>r</td><td>Platform take rate</td><td>UI parameter</td></tr>
-          <tr><td>C_m</td><td>Monthly operating costs</td><td>Salaries + fixed costs</td></tr>
-          <tr><td>I_0</td><td>Initial investment</td><td>UI parameter</td></tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Meaning</th>
+              <th>From UI / data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>H_c,m</td><td>Hosts in city c in month m</td><td>City rollout plan</td></tr>
+            <tr><td>q</td><td>Showers per host per day</td><td>UI parameter</td></tr>
+            <tr><td>D_avg</td><td>Average month length ({{ AVG_MONTH_LENGTH_DAYS }} days)</td><td>Model constant</td></tr>
+            <tr><td>p</td><td>Price per shower</td><td>UI parameter</td></tr>
+            <tr><td>r</td><td>Platform take rate</td><td>UI parameter</td></tr>
+            <tr><td>C_m</td><td>Monthly operating costs</td><td>Salaries + fixed costs</td></tr>
+            <tr><td>I_0</td><td>Initial investment</td><td>UI parameter</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3>Current default values used</h3>
       <p><strong>Price per shower:</strong> {{ euro(defaultScenario.price) }}</p>
@@ -823,22 +897,24 @@ onUnmounted(() => {
       <pre class="csv">{{ csvRaw }}</pre>
 
       <h3>Parsed table used for calculation</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>City</th>
-            <th>Population</th>
-            <th>Average tourists / month</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="city in cityData" :key="city.city">
-            <td>{{ city.city }}</td>
-            <td>{{ int(city.population) }}</td>
-            <td>{{ int(city.averageMonthlyTourists) }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Population</th>
+              <th>Average tourists / month</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="city in cityData" :key="city.city">
+              <td>{{ city.city }}</td>
+              <td>{{ int(city.population) }}</td>
+              <td>{{ int(city.averageMonthlyTourists) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <h3 style="margin-top: 1rem;">Host reference data (Gemini estimate)</h3>
       <p>
         Estimated total facilities per city (gyms, hostels, hotels, spas, sports centers). Model host cap uses {{ scenario.hostCapPct }}% of this.
@@ -847,22 +923,24 @@ onUnmounted(() => {
         Quick formula: <code>HostCap_city = estimated_total_facilities_city x {{ (scenario.hostCapPct / 100).toFixed(2) }}</code>
       </p>
       <pre class="csv">{{ hostFacilitiesRaw }}</pre>
-      <table>
-        <thead>
-          <tr>
-            <th>City</th>
-            <th>Estimated total facilities</th>
-            <th>Host cap used ({{ scenario.hostCapPct }}%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="entry in hostFacilitiesData" :key="entry.city">
-            <td>{{ entry.city }}</td>
-            <td>{{ int(entry.estimatedTotalFacilities) }}</td>
-            <td>{{ int(Math.round(entry.estimatedTotalFacilities * (scenario.hostCapPct / 100))) }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Estimated total facilities</th>
+              <th>Host cap used ({{ scenario.hostCapPct }}%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="entry in hostFacilitiesData" :key="entry.city">
+              <td>{{ entry.city }}</td>
+              <td>{{ int(entry.estimatedTotalFacilities) }}</td>
+              <td>{{ int(Math.round(entry.estimatedTotalFacilities * (scenario.hostCapPct / 100))) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p style="margin-top: 0.7rem;">
         Rollout assumptions in this version: Barcelona, then Rome, then Madrid, then Milan, then Paris, then Munich, and finally Athens.
         One new city every 4 months, and each city ramps according to the variable milestones set in the simulator.
@@ -872,5 +950,7 @@ onUnmounted(() => {
         (strong tourism flow + urban density + high practical need for on-the-go showers).
       </p>
     </section>
-  </main>
+    </main>
+    <InvestorFooter />
+  </div>
 </template>
