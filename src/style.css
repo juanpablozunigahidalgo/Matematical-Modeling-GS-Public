@@ -147,11 +147,19 @@ body {
 }
 
 .invest-hero-band {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%;
+  margin-left: 0;
   padding: clamp(2.75rem, 6.5vw, 4.75rem) 0 clamp(3rem, 7vw, 5rem);
   background: var(--gs-bg);
   box-sizing: border-box;
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .invest-hero-band {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
 }
 
 .invest-hero-inner {
@@ -284,13 +292,14 @@ button.home-link-btn.simulate-btn:focus-visible {
   position: sticky;
   top: var(--gs-header-sticky-h);
   z-index: 28;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%;
+  margin-left: 0;
   padding: 1.35rem 0 1.25rem;
   margin-bottom: 1rem;
   background: linear-gradient(180deg, #ffffff 0%, var(--gs-bg-soft) 100%);
   border-bottom: 1px solid var(--gs-border);
   box-sizing: border-box;
+  min-width: 0;
 }
 
 .roi-model-page-header-inner {
@@ -299,6 +308,14 @@ button.home-link-btn.simulate-btn:focus-visible {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   box-sizing: border-box;
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .roi-model-page-header {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
 }
 
 @media (min-width: 640px) {
@@ -354,10 +371,12 @@ button.home-link-btn.simulate-btn:focus-visible {
 
 .roi-model-page-lead {
   margin: 0;
-  max-width: 62ch;
+  max-width: min(62ch, 100%);
   font-size: 0.98rem;
   line-height: 1.5;
   color: var(--gs-text-soft);
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
 }
 
 .roi-model-tabs {
@@ -365,6 +384,8 @@ button.home-link-btn.simulate-btn:focus-visible {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .roi-model-tabs button {
@@ -390,6 +411,18 @@ button.home-link-btn.simulate-btn:focus-visible {
   background: var(--gs-primary);
   color: #ffffff;
   border-color: var(--gs-primary);
+}
+
+@media (max-width: 560px) {
+  .roi-model-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .roi-model-tabs button {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 @media (max-width: 900px) {
@@ -541,6 +574,9 @@ button.home-link-btn.simulate-btn:focus-visible {
   gap: clamp(0.85rem, 2vw, 1rem);
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 @media (min-width: 981px) {
@@ -596,11 +632,19 @@ button.home-link-btn.simulate-btn:focus-visible {
 }
 
 .portal-hero-band {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  width: 100%;
+  margin-left: 0;
   padding-top: clamp(2.15rem, 4.8vw, 3.15rem);
   padding-bottom: clamp(2.15rem, 4.8vw, 3.15rem);
   box-sizing: border-box;
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .portal-hero-band {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
 }
 
 .portal-hero-band--soft {
@@ -1150,8 +1194,8 @@ button.home-link-btn.simulate-btn:focus-visible {
   left: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
-  width: 320px;
-  max-width: min(320px, 70vw);
+  width: min(320px, calc(100vw - 1.5rem));
+  max-width: min(320px, calc(100vw - 1.5rem));
   background: #163361;
   border: 1px solid #3d67a8;
   color: #f4f8ff;
@@ -1171,6 +1215,17 @@ button.home-link-btn.simulate-btn:focus-visible {
 .info-dot:focus-visible::after {
   opacity: 1;
   visibility: visible;
+}
+
+@media (max-width: 640px) {
+  .info-dot::after {
+    left: auto;
+    right: 100%;
+    margin-right: 8px;
+    transform: translateY(-50%);
+    width: min(280px, calc(100vw - 2rem));
+    max-width: min(280px, calc(100vw - 2rem));
+  }
 }
 
 input {
@@ -1240,6 +1295,7 @@ input:focus {
 
 .results p {
   color: var(--gs-text-soft);
+  overflow-wrap: anywhere;
 }
 
 .formula {
@@ -1253,6 +1309,7 @@ input:focus {
 
 .formula p {
   margin: 0.2rem 0;
+  overflow-wrap: anywhere;
 }
 
 .kpis {

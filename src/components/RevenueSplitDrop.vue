@@ -3,13 +3,29 @@ import { computed } from "vue";
 
 defineOptions({ name: "RevenueSplitDrop" });
 
-const props = defineProps<{
-  platformTakePct: number;
-  hostTakePct: number;
-  cmPct: number;
-  adsPct: number;
-  priceLabel: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    platformTakePct: number;
+    hostTakePct: number;
+    cmPct: number;
+    adsPct: number;
+    /** Numeric shower price (EUR) — used to show each stakeholder’s € per shower */
+    priceEur?: number;
+    priceLabel: string;
+  }>(),
+  {
+    priceEur: 0,
+  },
+);
+
+function formatShowerEur(value: number): string {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
 
 const CX = 100;
 const CY = 100;
@@ -70,6 +86,14 @@ const segmentDefs = computed<Seg[]>(() => {
 });
 
 const splitTotal = computed(() => segmentDefs.value.reduce((s, x) => s + x.pct, 0));
+
+const legendSegments = computed(() => {
+  const price = Number.isFinite(props.priceEur) ? props.priceEur : 0;
+  return segmentDefs.value.map((s) => ({
+    ...s,
+    euroFormatted: formatShowerEur(price * (s.pct / 100)),
+  }));
+});
 
 function polar(cx: number, cy: number, r: number, angle: number) {
   return {
@@ -142,11 +166,17 @@ const pieLayout = computed(() => {
 });
 
 const ariaLabel = computed(() => {
+  const price = Number.isFinite(props.priceEur) ? props.priceEur : 0;
   const { slices, total } = pieLayout.value;
   if (!slices.length || total <= 0) {
     return "Revenue split chart: no percentages to display.";
   }
-  const parts = segmentDefs.value.map((s) => `${s.label} ${s.pct.toFixed(1)}%`).join(", ");
+  const parts = segmentDefs.value
+    .map((s) => {
+      const eur = formatShowerEur(price * (s.pct / 100));
+      return `${s.label} ${s.pct.toFixed(1)}%, ${eur} per shower`;
+    })
+    .join(", ");
   return `Revenue split per shower: ${parts}. Total ${total.toFixed(1)} percent.`;
 });
 
@@ -156,9 +186,11 @@ const labelRadius = R * 0.58;
 <template>
   <section class="revenue-split-drop" aria-labelledby="revenue-split-drop-title">
     <div class="revenue-split-drop-head">
-      <h2 id="revenue-split-drop-title" class="revenue-split-drop-title">How each shower payment splits</h2>
+      <h2 id="revenue-split-drop-title" class="revenue-split-drop-title">Shower Cut
+
+      </h2>
       <p class="revenue-split-drop-lead">
-        Pie follows your editable percentages (they should total 100%). Slice order clockwise from top: CAC → country manager → GettaShower → host.
+        Here you can see how each shower payment splits. Find the percentage breakdown below. 
       </p>
     </div>
 
@@ -220,20 +252,30 @@ const labelRadius = R * 0.58;
         </text>
       </svg>
 
-      <ul class="revenue-split-drop-legend" aria-label="Split legend">
-        <li v-for="b in segmentDefs" :key="b.key" class="revenue-split-drop-legend__item">
+      <ul class="revenue-split-drop-legend" aria-label="Split legend with amounts per shower">
+        <li v-for="b in legendSegments" :key="b.key" class="revenue-split-drop-legend__item">
           <span class="revenue-split-drop-legend__swatch" :style="{ background: b.fill }" />
           <span class="revenue-split-drop-legend__text">
-            <strong>{{ b.label }}</strong>
-            <span class="revenue-split-drop-legend__pct">{{ b.pct }}%</span>
+            <span class="revenue-split-drop-legend__main">
+              <span class="revenue-split-drop-legend__labels">
+                <strong>{{ b.label }}</strong>
+                <span class="revenue-split-drop-legend__pct">{{ b.pct }}%</span>
+              </span>
+              <span class="revenue-split-drop-legend__euro" :title="`${b.euroFormatted} per shower at ${priceLabel} shower price`">{{
+                b.euroFormatted
+              }}</span>
+            </span>
             <span class="revenue-split-drop-legend__sub">{{ b.sub }}</span>
           </span>
         </li>
       </ul>
     </div>
 
-    <p class="revenue-split-drop-caption">
-      User pays <strong>{{ priceLabel }}</strong> per shower — each slice is that share of gross revenue for one session.
+    <p class="revenue-split-drop-price-line">
+      User pays <strong>{{ priceLabel }}</strong> per shower.
+    </p>
+    <p class="revenue-split-drop-lead revenue-split-drop-summary">
+      The revenue from each shower is distributed among the various stakeholders according to the established payment split.
     </p>
   </section>
 </template>
@@ -335,7 +377,7 @@ const labelRadius = R * 0.58;
   padding: 0;
   display: grid;
   gap: 0.45rem;
-  min-width: min(100%, 240px);
+  min-width: min(100%, 280px);
   flex: 1;
 }
 
@@ -359,9 +401,10 @@ const labelRadius = R * 0.58;
 
 .revenue-split-drop-legend__text {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.5rem;
+  flex-direction: column;
+  gap: 0.12rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .revenue-split-drop-legend__text strong {
@@ -369,9 +412,33 @@ const labelRadius = R * 0.58;
   font-weight: 800;
 }
 
+.revenue-split-drop-legend__main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.revenue-split-drop-legend__labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  min-width: 0;
+}
+
 .revenue-split-drop-legend__pct {
   font-weight: 700;
   color: var(--gs-primary, #1a2b70);
+}
+
+.revenue-split-drop-legend__euro {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.84rem;
+  color: var(--gs-text, #1a2b70);
+  flex-shrink: 0;
 }
 
 .revenue-split-drop-legend__sub {
@@ -380,13 +447,23 @@ const labelRadius = R * 0.58;
   color: var(--gs-text-muted, #6b7db8);
 }
 
-.revenue-split-drop-caption {
+.revenue-split-drop-price-line {
   margin: 1rem 0 0;
-  text-align: center;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--gs-text, #1a2b70);
+  text-align: left;
+  font-size: 0.9rem;
   line-height: 1.45;
+  font-weight: 400;
+  color: var(--gs-text-soft, #4a5f9e);
+  max-width: 62ch;
+}
+
+.revenue-split-drop-price-line strong {
+  color: var(--gs-text, #1a2b70);
+  font-weight: 700;
+}
+
+.revenue-split-drop-summary {
+  margin-top: 0.5rem;
 }
 
 @media (min-width: 640px) {

@@ -450,7 +450,9 @@ onUnmounted(() => {
           <p class="roi-model-eyebrow">Financial model</p>
           <h1 class="roi-model-page-title">ROI model</h1>
           <p class="roi-model-page-lead">
-            Stress-test assumptions, audit the equations, and inspect the reference inputs behind the projections.
+            Here, you can stress-test our business model and verify the logic behind our projections and underlying
+            inputs. Please adjust the variables below. You can also find an in-depth explanation of the equations in the
+            Mathematical Model section.
           </p>
           <nav class="roi-model-tabs" aria-label="ROI model views">
             <button type="button" :class="{ active: view === 'simulator' }" @click="view = 'simulator'">Simulator</button>
@@ -684,13 +686,25 @@ onUnmounted(() => {
           :host-take-pct="scenarioDraft.hostTakePct"
           :cm-pct="scenarioDraft.cmPct"
           :ads-pct="scenarioDraft.adsPct"
+          :price-eur="scenarioDraft.price"
           :price-label="euroPrice(scenarioDraft.price)"
         />
         <h2>Business model summary</h2>
         <p>
-          The model uses a simple operational logic. Each month:
-          <strong> Sessions = Hosts x Showers/Host/Day x Average Month Length</strong>.
-          This keeps sessions directly proportional to host network size.
+          In our business model, our application gets
+          <strong>{{ scenarioDraft.platformTakePct }}% ({{ euroPrice((scenarioDraft.price * scenarioDraft.platformTakePct) / 100) }})</strong>
+          of each shower payment. This is the revenue that goes to GettaShower for each transaction.
+        </p>
+        <p>
+          From that standpoint, in order to calculate the total revenue, the model uses a simple operational logic.
+          Each month, total sessions (or total showers taken that month) are calculated as:
+          <strong>
+            (number of hosts registered in the app) * (average showers taken per day for each host) * (average month
+            length)</strong>. This keeps sessions directly proportional to host network size.
+        </p>
+        <p>
+          Hence, the revenue for the app is calculated as follows:
+          <strong>(total sessions per month) * (price per shower) * (platform take rate)</strong>.
         </p>
 
         <div class="formula">
