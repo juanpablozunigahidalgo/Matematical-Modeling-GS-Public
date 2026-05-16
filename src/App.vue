@@ -544,7 +544,7 @@ onUnmounted(() => {
                 <span class="founder-photo-ring"><img src="/team/juan-pablo.png" alt="Juan Pablo profile photo" class="founder-photo"></span>
               </div>
               <h4 class="founder-name">Juan Pablo Zúñiga Hidalgo</h4>
-              <p class="founder-title">CEO</p>
+              <p class="founder-title">Entrepreneur</p>
               <ul class="founder-facts">
                 <li><strong>University education:</strong> MSc Engineer + MSc Management (Chalmers University of Technology).</li>
                 <li><strong>Role:</strong> Leads product strategy, backend architecture, cloud systems, and GTM execution in Southern Europe.</li>
