@@ -688,8 +688,7 @@ button.home-link-btn.simulate-btn:focus-visible {
 }
 
 #portal-overview,
-.portal-subsection,
-#investor-materials {
+.portal-subsection {
   scroll-margin-top: var(--portal-scroll-anchor);
 }
 

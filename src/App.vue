@@ -530,14 +530,14 @@ onUnmounted(() => {
           <div class="portal-strip portal-strip--hero">
             <div><strong>Why now:</strong> high density cities + more active people globally + mobile usage + urban mobility + mobile technology widespread.</div>
             <div><strong>Business model:</strong> 70% host / 20% platform / 6% country manager / 4% CAC.</div>
-            <div><strong>Execution:</strong> full technical founding team building and shipping in-house.</div>
+            <div><strong>Execution:</strong> technical founder building and shipping in-house.</div>
           </div>
         </div>
       </div>
 
       <div class="portal-hero-band">
         <div class="portal-hero-inner">
-          <h3 id="founder-team" class="portal-section-heading">Founder team</h3>
+          <h3 id="founder-team" class="portal-section-heading">Founder</h3>
           <div class="portal-grid founders-grid">
             <div class="kpi founder-card">
               <div class="founder-head">
@@ -556,42 +556,10 @@ onUnmounted(() => {
                 <a class="inline-link-btn cv-btn" href="/docs/CV-Juan-Pablo-Zuniga-Hidalgo.pdf" download>Download CV</a>
               </div>
             </div>
-            <div class="kpi founder-card">
-              <div class="founder-head">
-                <span class="founder-photo-ring"><img src="/team/isabell.png" alt="Isabell profile photo" class="founder-photo"></span>
-              </div>
-              <h4 class="founder-name">Isabell Nordmark</h4>
-              <p class="founder-title">CTO</p>
-              <ul class="founder-facts">
-                <li><strong>University education:</strong> MSc Architecture & Urban Design + BSc Engineer in Computer Science (Chalmers University of Technology).</li>
-                <li><strong>Role:</strong> Leads mobile product engineering (Flutter/Dart), technical architecture, and design-quality UX delivery.</li>
-                <li><strong>Key focus:</strong> rapid product iteration, user trust flows, and platform usability.</li>
-              </ul>
-              <div class="founder-links">
-                <a class="inline-link-btn" href="https://www.linkedin.com/in/i-nordmark/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a class="inline-link-btn cv-btn" href="/docs/Isabell-Nordmark-CV.pdf" download>Download CV</a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      <div id="investor-materials" class="portal-hero-band portal-hero-band--soft">
-        <div class="portal-hero-inner">
-          <div class="portal-overview-video-wrap">
-            <div class="video-wrap portal-video-embed">
-              <iframe
-                src="https://drive.google.com/file/d/1vz5_miemGXnTkk7ZMMqLidKwsvTDAGvX/preview"
-                title="GettaShower team video"
-                loading="lazy"
-                allow="autoplay; encrypted-media"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <section v-if="page === 'roi-model' && view === 'simulator'" class="simulator">
